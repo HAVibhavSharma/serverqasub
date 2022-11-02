@@ -88,23 +88,29 @@ const addQuestion = (req, res, next) => {
           res.status(201).json({ model: success });
         } else {
           console.log("error");
+          next(new HttpError("error occured ", 404));
         }
       }
     );
   } else {
-    next(new HttpError("not found", 404));
+    next(new HttpError("Subject not found", 404));
     //handle error
   }
 };
 const findquestion = async (model, id) => {
   const question = await model.findOne({ id: id });
+  if (!question.length) {
+    next(new HttpError("question not found", 404));
+    return;
+  }
   return question;
 };
 const getdailyquestion = async (req, res, next) => {
   const sub = req.params.sub;
   counter.findOne({ subject: sub }, async (err, cd) => {
     if (cd == null) {
-      return res.status(404).json({ message: "not found" });
+      next(new HttpError("daily counter not found", 404));
+      return;
     } else {
       if (subjects.includes(sub)) {
         let question;
@@ -150,12 +156,15 @@ const updatedaily = (req, res, next) => {
           if (cd.daily > cd.counter) {
             cd.daily = cd.counter;
             cd.save();
-            return res.status(404).json({ message: "no further questions" });
+            next(new HttpError("no further questions", 404));
+            return;
           }
         }
         res.status(200).json({ message: "updated daily pointer" });
       }
     );
+  } else {
+    next(new HttpError("not found", 404));
   }
 };
 
@@ -180,6 +189,9 @@ const getqalist = async (req, res, next) => {
         res.status(200).json({ question: mathquestion });
         break;
     }
+  } else {
+    next(new HttpError("not found", 404));
+    return;
   }
 };
 
@@ -190,18 +202,34 @@ const getqa = async (req, res, next) => {
     switch (sub) {
       case subjects[0]:
         const phyquestion = await PhyQAModel.find({ id: id });
+        if (!phyquestion.length) {
+          next(new HttpError("not found", 404));
+          return;
+        }
         res.status(200).json({ question: phyquestion });
         break;
       case subjects[1]:
         const chemquestion = await ChemQAModel.find({ id: id });
+        if (!chemquestion.length) {
+          next(new HttpError("not found", 404));
+          return;
+        }
         res.status(200).json({ question: chemquestion });
         break;
       case subjects[2]:
         const bioquestion = await BioQAModel.find({ id: id });
+        if (!bioquestion.length) {
+          next(new HttpError("not found", 404));
+          return;
+        }
         res.status(200).json({ question: bioquestion });
         break;
       case subjects[3]:
         const mathquestion = await MathQAModel.find({ id: id });
+        if (!mathquestion.length) {
+          next(new HttpError("not found", 404));
+          return;
+        }
         res.status(200).json({ question: mathquestion });
         break;
     }
@@ -274,6 +302,7 @@ const updatefunc = async (model, id, question, answer) => {
     .catch(function (err) {
       console.log(err);
     });
+
   return modify;
 };
 const updateqabyid = async (req, res, next) => {
@@ -286,6 +315,7 @@ const updateqabyid = async (req, res, next) => {
     switch (sub) {
       case subjects[0]:
         success = await updatefunc(PhyQAModel, id, question, answer);
+
         break;
       case subjects[1]:
         success = await updatefunc(ChemQAModel, id, question, answer);
@@ -294,21 +324,6 @@ const updateqabyid = async (req, res, next) => {
         success = await updatefunc(BioQAModel, id, question, answer);
         break;
       case subjects[3]:
-        // const mathquestion = await MathQAModel.findOne(
-        //   { id: id },
-        //   async (err, cd) => {
-        //     if (cd != null) {
-        //       cd.question = q;
-        //       cd.answer = a;
-        //       await cd.save();
-        //     }
-        //   }
-        // )
-        //   .clone()
-        //   .catch(function (err) {
-        //     console.log(err);
-        //   });
-        // res.status(200).json({ message: "updated" });
         success = await updatefunc(MathQAModel, id, question, answer);
         break;
     }
@@ -318,6 +333,8 @@ const updateqabyid = async (req, res, next) => {
       console.log("err");
       next(new HttpError("not found", 404));
     }
+  } else {
+    next(new HttpError("Subject not found", 404));
   }
 };
 

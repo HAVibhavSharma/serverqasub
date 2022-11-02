@@ -14,14 +14,13 @@ router.use(bodyParser.json());
 //   res.send("<div>" + req.body.fname + req.body.lname + "</div>");
 // });
 // router.use("/admin", admin.adminpage);
-
-router.post("/:sub", admin.addQuestion);
-
 router.get("/today/:sub", admin.getdailyquestion);
 
 router.get("/:sub/:id", admin.getqa);
 
 router.get("/:sub", admin.getqalist);
+
+router.post("/:sub", admin.addQuestion);
 
 router.delete("/:sub/:id", admin.deleteqa);
 

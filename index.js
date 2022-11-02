@@ -3,9 +3,20 @@ const express = require("express");
 const app = express();
 const adminroutes = require("./routes/admin-routes");
 const mongoose = require("mongoose");
+const userroutes = require("./routes/user-routes");
+
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin,X-Requested-With,Content-Type,Accept,Authorization"
+  );
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE");
+  next();
+});
 
 app.use("/api/admin", adminroutes);
-
+app.use("/api/user", userroutes);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use((error, req, res, next) => {
   if (res.headerSent) {

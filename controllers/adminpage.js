@@ -97,76 +97,76 @@ const addQuestion = (req, res, next) => {
     //handle error
   }
 };
-const findquestion = async (model, id) => {
-  const question = await model.findOne({ id: id });
-  if (!question.length) {
-    next(new HttpError("question not found", 404));
-    return;
-  }
-  return question;
-};
-const getdailyquestion = async (req, res, next) => {
-  const sub = req.params.sub;
-  counter.findOne({ subject: sub }, async (err, cd) => {
-    if (cd == null) {
-      next(new HttpError("daily counter not found", 404));
-      return;
-    } else {
-      if (subjects.includes(sub)) {
-        let question;
-        switch (sub) {
-          case subjects[0]:
-            question = await findquestion(PhyQAModel, cd.daily);
-            break;
-          case subjects[1]:
-            question = await findquestion(ChemQAModel, cd.daily);
-            break;
-          case subjects[2]:
-            question = await findquestion(BioQAModel, cd.daily);
-            break;
-          case subjects[3]:
-            question = await findquestion(MathQAModel, cd.daily);
-            // const mathquestion = await MathQAModel.findOne({ id: cd.daily });
-            // res.status(200).json({ question: mathquestion });
-            break;
-        }
-        if (question) {
-          res.status(200).json({ question: question });
-        } else {
-          console.log("err");
-          next(new HttpError("not found", 404));
-        }
-      }
-    }
-  });
-};
-const updatedaily = (req, res, next) => {
-  const sub = req.params.sub;
-  if (subjects.includes(sub)) {
-    counter.findOneAndUpdate(
-      { subject: sub },
-      { $inc: { daily: 1 } },
-      { new: true },
-      (err, cd) => {
-        if (cd == null) {
-          const newval = new counter({ subject: sub, counter: 1, daily: 1 });
-          newval.save();
-          autoid = 1;
-        } else {
-          if (cd.daily > cd.counter) {
-            cd.daily = cd.counter;
-            cd.save();
-            next(new HttpError("no further questions", 404));
-            return;
-          }
-        }
-        res.status(200).json({ message: "updated daily pointer" });
-      }
-    );
-  } else {
-    next(new HttpError("not found", 404));
-  }
-};
+// const findquestion = async (model, id) => {
+//   const question = await model.findOne({ id: id });
+//   if (!question.length) {
+//     next(new HttpError("question not found", 404));
+//     return;
+//   }
+//   return question;
+// };
+// const getdailyquestion = async (req, res, next) => {
+//   const sub = req.params.sub;
+//   counter.findOne({ subject: sub }, async (err, cd) => {
+//     if (cd == null) {
+//       next(new HttpError("daily counter not found", 404));
+//       return;
+//     } else {
+//       if (subjects.includes(sub)) {
+//         let question;
+//         switch (sub) {
+//           case subjects[0]:
+//             question = await findquestion(PhyQAModel, cd.daily);
+//             break;
+//           case subjects[1]:
+//             question = await findquestion(ChemQAModel, cd.daily);
+//             break;
+//           case subjects[2]:
+//             question = await findquestion(BioQAModel, cd.daily);
+//             break;
+//           case subjects[3]:
+//             question = await findquestion(MathQAModel, cd.daily);
+//             // const mathquestion = await MathQAModel.findOne({ id: cd.daily });
+//             // res.status(200).json({ question: mathquestion });
+//             break;
+//         }
+//         if (question) {
+//           res.status(200).json({ question: question });
+//         } else {
+//           console.log("err");
+//           next(new HttpError("not found", 404));
+//         }
+//       }
+//     }
+//   });
+// };
+// const updatedaily = (req, res, next) => {
+//   const sub = req.params.sub;
+//   if (subjects.includes(sub)) {
+//     counter.findOneAndUpdate(
+//       { subject: sub },
+//       { $inc: { daily: 1 } },
+//       { new: true },
+//       (err, cd) => {
+//         if (cd == null) {
+//           const newval = new counter({ subject: sub, counter: 1, daily: 1 });
+//           newval.save();
+//           autoid = 1;
+//         } else {
+//           if (cd.daily > cd.counter) {
+//             cd.daily = cd.counter;
+//             cd.save();
+//             next(new HttpError("no further questions", 404));
+//             return;
+//           }
+//         }
+//         res.status(200).json({ message: "updated daily pointer" });
+//       }
+//     );
+//   } else {
+//     next(new HttpError("not found", 404));
+//   }
+// };
 
 const getqalist = async (req, res, next) => {
   const sub = req.params.sub;
@@ -337,12 +337,82 @@ const updateqabyid = async (req, res, next) => {
     next(new HttpError("Subject not found", 404));
   }
 };
+const findquestion = async (model, id) => {
+  const question = await model.findOne({ id: id });
+  if (!question.length) {
+    next(new HttpError("question not found", 404));
+    return;
+  }
+  return question;
+};
+const getdailyquestion = async (req, res, next) => {
+  const sub = req.params.sub;
+  counter.findOne({ subject: sub }, async (err, cd) => {
+    if (cd == null) {
+      next(new HttpError("daily counter not found", 404));
+      return;
+    } else {
+      if (subjects.includes(sub)) {
+        let question;
+        switch (sub) {
+          case subjects[0]:
+            question = await findquestion(PhyQAModel, cd.daily);
+            break;
+          case subjects[1]:
+            question = await findquestion(ChemQAModel, cd.daily);
+            break;
+          case subjects[2]:
+            question = await findquestion(BioQAModel, cd.daily);
+            break;
+          case subjects[3]:
+            question = await findquestion(MathQAModel, cd.daily);
+            // const mathquestion = await MathQAModel.findOne({ id: cd.daily });
+            // res.status(200).json({ question: mathquestion });
+            break;
+        }
+        if (question) {
+          res.status(200).json({ question: question });
+        } else {
+          console.log("err");
+          next(new HttpError("not found", 404));
+        }
+      }
+    }
+  });
+};
+const updatedaily = (req, res, next) => {
+  const sub = req.params.sub;
+  if (subjects.includes(sub)) {
+    counter.findOneAndUpdate(
+      { subject: sub },
+      { $inc: { daily: 1 } },
+      { new: true },
+      (err, cd) => {
+        if (cd == null) {
+          const newval = new counter({ subject: sub, counter: 1, daily: 1 });
+          newval.save();
+          autoid = 1;
+        } else {
+          if (cd.daily > cd.counter) {
+            cd.daily = cd.counter;
+            cd.save();
+            next(new HttpError("no further questions", 404));
+            return;
+          }
+        }
+        res.status(200).json({ message: "updated daily pointer" });
+      }
+    );
+  } else {
+    next(new HttpError("not found", 404));
+  }
+};
 
+exports.updatedaily = updatedaily;
+exports.getdailyquestion = getdailyquestion;
 // exports.adminpage = adminpage;
 exports.addQuestion = addQuestion;
 exports.getqalist = getqalist;
 exports.getqa = getqa;
 exports.deleteqa = deleteqa;
 exports.updateqabyid = updateqabyid;
-exports.updatedaily = updatedaily;
-exports.getdailyquestion = getdailyquestion;
